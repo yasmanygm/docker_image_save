@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       image_name:
-        description: 'paddlepaddle/paddle'
+        description: 'Nombre imagen docker'
         required: true
-        default: 'sde'
+        default: 'paddlepaddle/paddle'
       image_tag:
-        description: '2.6.2'
+        description: 'Tag de imagen docker'
         required: true
-        default: 'latest'
+        default: '2.6.2'
       filename:
-        description: 'imagen.tar'
+        description: 'Nombre de archivo a guardar'
         required: true
         default: 'imagen.tar'
 
