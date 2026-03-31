@@ -1,0 +1,45 @@
+name: Descargar imagen de Docker
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'paddlepaddle/paddle'
+        required: true
+        default: 'sde'
+      image_tag:
+        description: '2.6.2'
+        required: true
+        default: 'latest'
+      filename:
+        description: 'imagen.tar'
+        required: true
+        default: 'imagen.tar'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Instalar Skopeo
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y skopeo
+
+    - name: Descargar imagen de Docker Hub
+      run: |
+        skopeo copy \
+          docker://docker.io/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }} \
+          docker-archive:${{ github.event.inputs.filename }}:${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }}
+
+    - name: Verificar archivo creado
+      run: |
+        ls -lh
+        file ${{ github.event.inputs.filename }}
+
+    - name: Subir archivo como artefacto
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.event.inputs.image_name }}-${{ github.event.inputs.image_tag }}
+        path: ${{ github.event.inputs.filename }}
+        retention-days: 7
