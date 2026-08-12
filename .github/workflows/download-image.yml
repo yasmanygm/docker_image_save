@@ -28,9 +28,16 @@ jobs:
 
     - name: Descargar imagen de Docker Hub
       run: |
-        skopeo copy \
-          docker://docker.io/${{ github.event.inputs.image_name }}:${{ github.event.inputs.image_tag }} \
-          docker-archive:${{ github.event.inputs.filename }}
+        IMAGE="${{ github.event.inputs.image_name }}"
+        TAG="${{ github.event.inputs.image_tag }}"
+        FIRST="${IMAGE%%/*}"
+        if [[ "$FIRST" == *.* || "$FIRST" == *:* || "$FIRST" == "localhost" ]]; then
+          SOURCE="docker://${IMAGE}:${TAG}"
+        else
+          SOURCE="docker://docker.io/${IMAGE}:${TAG}"
+        fi
+        echo "Descargando: $SOURCE"
+        skopeo copy "$SOURCE" docker-archive:${{ github.event.inputs.filename }}
 
     - name: Verificar archivo creado
       run: |
